@@ -1,0 +1,57 @@
+%% Схема модели Data Vault 2.0 (Хабы — Ссылки — Сателлиты)
+%% Вариант 6 — «Система учебного графика дисциплин факультета»
+flowchart LR
+    subgraph HUBS["ХАБЫ (Hub) — бизнес-ключи сущностей"]
+        direction TB
+        H1["<b>hub_kafedra</b><br/>hash_kafedra PK = MD5(kod_kafedry)<br/>kod_kafedry (BK)<br/>load_date, record_source"]
+        H2["<b>hub_specialnost</b><br/>hash_specialnost PK = MD5(kodifikator)<br/>kodifikator (BK)<br/>load_date, record_source"]
+        H3["<b>hub_gruppa</b><br/>hash_gruppa PK = MD5(nazvanie)<br/>nazvanie (BK)<br/>load_date, record_source"]
+        H4["<b>hub_disciplina</b><br/>hash_disciplina PK = MD5(shifr)<br/>shifr (BK)<br/>load_date, record_source"]
+        H5["<b>hub_prepodavatel</b><br/>hash_prepodavatel PK = MD5(tab_nomer)<br/>tab_nomer (BK)<br/>load_date, record_source"]
+        H6["<b>hub_auditoriya</b><br/>hash_auditoriya PK = MD5(korpus-nomer)<br/>aud_key (BK)<br/>load_date, record_source"]
+    end
+
+    subgraph LINKS["ССЫЛКИ (Link) — связи многие-ко-многим"]
+        direction TB
+        L1["<b>link_gruppa_specialnost</b><br/>hash_link PK = MD5(hash_gruppa|hash_specialnost)"]
+        L2["<b>link_prepodavatel_kafedra</b><br/>hash_link PK = MD5(hash_prepodavatel|hash_kafedra)"]
+        L3["<b>link_disciplina_kafedra</b><br/>hash_link PK = MD5(hash_disciplina|hash_kafedra)"]
+        L4["<b>link_zanyatie</b> (событие расписания)<br/>hash_link PK = MD5(hash_gruppa|hash_disciplina|<br/>hash_prepodavatel|hash_auditoriya|день|пара|неделя)"]
+    end
+
+    subgraph SATS["САТЕЛЛИТЫ (Satellite) — контекст и история"]
+        direction TB
+        S1["<b>sat_kafedra</b><br/>nazvanie, telefon, hashdiff"]
+        S2["<b>sat_specialnost</b><br/>nazvanie, uroven, hashdiff"]
+        S3["<b>sat_gruppa</b><br/>kurs, god_postupleniya, hashdiff"]
+        S4["<b>sat_disciplina</b><br/>nazvanie, semestr, часы, hashdiff"]
+        S5["<b>sat_prepodavatel</b><br/>fio, dolzhnost, email, hashdiff"]
+        S6["<b>sat_auditoriya</b><br/>nomer, korpus, tip, vmestimost, hashdiff"]
+        S7["<b>sat_zanyatie</b><br/>tip_zanyatiya, hashdiff"]
+    end
+
+    H3 --> L1
+    H2 --> L1
+    H5 --> L2
+    H1 --> L2
+    H4 --> L3
+    H1 --> L3
+    H3 --> L4
+    H4 --> L4
+    H5 --> L4
+    H6 --> L4
+
+    S1 -.->|"контекст"| H1
+    S2 -.->|"контекст"| H2
+    S3 -.->|"контекст"| H3
+    S4 -.->|"контекст"| H4
+    S5 -.->|"контекст"| H5
+    S6 -.->|"контекст"| H6
+    S7 -.->|"контекст"| L4
+
+    classDef hub fill:#cfe8ff,stroke:#1f4e79,stroke-width:2px,color:#0b2545;
+    classDef lnk fill:#ffe9c9,stroke:#b25f00;
+    classDef sat fill:#d8f2d8,stroke:#2f7d32;
+    class H1,H2,H3,H4,H5,H6 hub;
+    class L1,L2,L3,L4 lnk;
+    class S1,S2,S3,S4,S5,S6,S7 sat;

@@ -1,0 +1,75 @@
+%% Диаграмма «сущность — связь» модели 3НФ
+%% ВУЗ: Московский Политех, дисциплина «Хранилища данных»
+%% Вариант 6 — «Система учебного графика дисциплин факультета»
+erDiagram
+    KAFEDRA ||--o{ GRUPPA : "выпускающая кафедра"
+    KAFEDRA ||--o{ PREPODAVATEL : "место работы"
+    KAFEDRA ||--o{ DISCIPLINA : "ведущая кафедра"
+    KORPUS ||--o{ AUDITORIYA : "расположена в"
+    SPECIALNOST ||--o{ GRUPPA : "направление подготовки"
+    GRUPPA ||--o{ ZANYATIE : "занятия группы"
+    DISCIPLINA ||--o{ ZANYATIE : "занятие по дисциплине"
+    PREPODAVATEL ||--o{ ZANYATIE : "ведёт занятие"
+    AUDITORIYA ||--o{ ZANYATIE : "проводится в"
+
+    KAFEDRA {
+        int kafedra_id PK
+        varchar kod_kafedry UK
+        varchar nazvanie
+        varchar telefon
+    }
+    KORPUS {
+        int korpus_id PK
+        varchar nazvanie UK
+        varchar adres
+    }
+    AUDITORIYA {
+        int auditoriya_id PK
+        varchar nomer
+        varchar tip
+        int vmestimost
+        int korpus_id FK
+    }
+    SPECIALNOST {
+        int specialnost_id PK
+        varchar kodifikator UK
+        varchar nazvanie
+        varchar uroven
+    }
+    GRUPPA {
+        int gruppa_id PK
+        varchar nazvanie UK
+        int kurs
+        int god_postupleniya
+        int specialnost_id FK
+        int kafedra_id FK
+    }
+    PREPODAVATEL {
+        int prepodavatel_id PK
+        varchar tab_nomer UK
+        varchar fio
+        varchar dolzhnost
+        varchar email UK
+        int kafedra_id FK
+    }
+    DISCIPLINA {
+        int disciplina_id PK
+        varchar shifr UK
+        varchar nazvanie
+        int semestr
+        int chasy_lek
+        int chasy_prakt
+        int chasy_lab
+        int kafedra_id FK
+    }
+    ZANYATIE {
+        int zanyatie_id PK
+        int disciplina_id FK
+        int gruppa_id FK
+        int prepodavatel_id FK
+        int auditoriya_id FK
+        int den_nedeli
+        int para
+        varchar nedelya
+        varchar tip_zanyatiya
+    }

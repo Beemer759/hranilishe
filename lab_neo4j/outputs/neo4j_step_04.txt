@@ -1,0 +1,18 @@
+=== ШАГ 4: Практические примеры: связи (создание, чтение, удаление) ===
+
+neo4j> MATCH (a:Person {name:"Алиса"}), (b:Person {name:"Боб"}) CREATE (a)-[:KNOWS {since: 2020}]->(b) RETURN a, b;
+a, b
+(:Person {name: "Алиса", age: 30}), (:Person {name: "Боб", age: 25})
+
+neo4j> MATCH (a:Person {name:"Алиса"}), (b:Person {name:"Боб"}) CREATE (b)-[:KNOWS {since: 2021}]->(a) RETURN a, b;
+a, b
+(:Person {name: "Алиса", age: 30}), (:Person {name: "Боб", age: 25})
+
+neo4j> MATCH (a:Person)-[r:KNOWS]->(b:Person) RETURN a.name AS от, b.name AS к, r.since AS с;
+от, к, с
+"Алиса", "Боб", 2020
+"Боб", "Алиса", 2021
+
+neo4j> MATCH (a:Person)-[r:KNOWS]->(b:Person) DELETE r;
+
+neo4j> MATCH (n) DETACH DELETE n;
